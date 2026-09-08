@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 const AUTH_DIR = path.resolve(__dirname, '..', '.auth');
+const ENV_FILE = path.join(AUTH_DIR, '.env');
 const SESSION_ID_FILE = path.join(AUTH_DIR, 'session_id.txt');
 const STORAGE_STATE_FILE = path.join(AUTH_DIR, 'storage-state.json');
 const LEGACY_STATE_FILE = path.resolve(__dirname, '..', 'session.json');
@@ -29,8 +30,23 @@ function legacySessionId() {
   return state.cookies?.find((cookie) => cookie.name === AUTH_COOKIE_NAME)?.value;
 }
 
+function envFileSessionId() {
+  if (!fs.existsSync(ENV_FILE)) return undefined;
+
+  const line = fs.readFileSync(ENV_FILE, 'utf8')
+    .split(/\r?\n/)
+    .find((entry) => /^\s*CHATBOQ_SESSION_ID\s*=/.test(entry));
+
+  if (!line) return undefined;
+  const value = line.replace(/^\s*CHATBOQ_SESSION_ID\s*=\s*/, '').trim();
+  return value.replace(/^(['"])(.*)\1$/, '$2');
+}
+
 function getSessionId() {
   if (process.env.CHATBOQ_SESSION_ID) return saveSessionId(process.env.CHATBOQ_SESSION_ID);
+
+  const envFileSession = envFileSessionId();
+  if (envFileSession) return saveSessionId(envFileSession);
 
   // `session.json` is the manually refreshed browser session. Prefer it over
   // the cached value so a new session is picked up without deleting .auth.

@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { AUTH_COOKIE_NAME } from '../utils/auth';
 import { InboxPage } from '../pages/InboxPage';
+import { TestReporter } from '../utils/TestReporter.js';
 
 const ORG_ID = '7e4e3977-3e16-4907-903e-14d6f5ebf381';
 
@@ -28,7 +29,8 @@ const ORG_ID = '7e4e3977-3e16-4907-903e-14d6f5ebf381';
 // });
 
 test('inbox', async ({ page }) => {
-    const inboxPage = new InboxPage(page);
+  const reporter = new TestReporter();
+    const inboxPage = new InboxPage(page, reporter);
     await page.goto(`https://stagingv2.chatboq.com/app/${ORG_ID}/default-inbox`);
   await page.waitForURL(/default-inbox/);
   try{
@@ -52,6 +54,6 @@ test('inbox', async ({ page }) => {
   await inboxPage.activeInactive();
   }
   finally{
-     inboxPage.printTestSummary();
+     reporter.printTestSummary();
   }
 });

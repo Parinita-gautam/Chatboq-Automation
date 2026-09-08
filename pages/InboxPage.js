@@ -1,14 +1,10 @@
 import { expect } from "playwright/test";
+import { TestReporter } from "../utils/TestReporter.js";
+
 export class InboxPage{
-    constructor(page){
+    constructor(page, reporter){
         this.page=page;
-
-        this.totalTests = 0;
-        this.passedTests = 0;
-        this.failedTests = 0;
-
-        this.testResults = [];
-        this.failedTestNames = [];
+        this.reporter = reporter;
 
         this.visitor1=page.getByText('Visitor 80');
 
@@ -110,62 +106,62 @@ export class InboxPage{
 
 }
 
-async runStep(testName, action) {
-    this.totalTests++;
-        try {
-            // console.log(`\n START: ${testName}`);
+// async runStep(testName, action) {
+//     this.totalTests++;
+//         try {
+//             // console.log(`\n START: ${testName}`);
 
-            await action();
-            this.passedTests++;
+//             await action();
+//             this.passedTests++;
 
-            console.log(` PASSED: ${testName}`);
+//             console.log(` PASSED: ${testName}`);
 
-            return true;
+//             return true;
 
-        } catch (error) {
-            this.failedTests++;
-            this.failedTestNames.push(testName);
-            console.log(` FAILED: ${testName}`);
-            console.log(`   Error: ${error.message}`);
+//         } catch (error) {
+//             this.failedTests++;
+//             this.failedTestNames.push(testName);
+//             console.log(` FAILED: ${testName}`);
+//             console.log(`   Error: ${error.message}`);
 
-            return false;
-        }
-    }
+//             return false;
+//         }
+//     }
 
 
     async visitor(){
-         await this.runStep('Open Visitor 80',async () => {
+         await this.reporter.runStep('Open Visitor 80',async () => {
                 await this.visitor1.click();
             }
         );
     }
 
     async messagebox(){
-        await this.runStep('Open message formatting',async () => {
+        await this.reporter.runStep('Open message formatting',async () => {
         await this.messageformatting.click();
         }
         );
-        await this.runStep('Fill Message',async () => {
+        await this.reporter.runStep('Fill Message',async () => {
             await this.messagebox1.fill('Playwright message');
         }
         );
-        await this.runStep('Copied message',async () => {
+        await this.reporter.runStep('Copied message',async () => {
             await this.messagebox1.press('Control+a');
         }
         );
-        await this.runStep('Bold Text Format',async () => {
+        await this.reporter.runStep('Bold Text Format',async () => {
             await this.bold.click();
         }
         );
-        await this.runStep('Italic Text Format',async () => {
+        await this.reporter.runStep('Italic Text Format',async () => {
             await this.italic.click();
         }
         );
-        await this.runStep('Underline Format',async () => {
+        await this.reporter.runStep('Underline Format',async () => {
             await this.underline.click();
         }
         );
-        await this.runStep('Send Message',async () => {
+        await this.reporter.runStep('Send Message',async () => {
             await this.sendmessage.click();
         }
         );
@@ -175,20 +171,20 @@ async runStep(testName, action) {
     async bulletpointlist(){
         await this.bulletpoint.click();
         for (let i = 0; i < 3; i++) {
-            await this.runStep('Send bullet point Message',async () => {
+            await this.reporter.runStep('Send bullet point Message',async () => {
                 await this.messagebox1.type('Playwright message');
         }
         );
-        await this.runStep('Next point',async () => {
+        await this.reporter.runStep('Next point',async () => {
             await this.messagebox1.press('Enter');
         }
         );
-        await this.runStep('sub bulletpoint',async () => {
+        await this.reporter.runStep('sub bulletpoint',async () => {
             await this.messagebox1.press('Tab');
         }
         );
         }
-        await this.runStep('Send bullet point Message',async () => {
+        await this.reporter.runStep('Send bullet point Message',async () => {
             await this.sendmessage.click();
         }
         );
@@ -196,20 +192,20 @@ async runStep(testName, action) {
     async bulletnolist(){
         await this.numberlist.click();
         for (let i = 0; i < 3; i++) {
-            await this.runStep('Fill Number list Message',async () => {
+            await this.reporter.runStep('Fill Number list Message',async () => {
                 await this.messagebox1.fill('Playwright message');
         }
         );
-        await this.runStep('Next point',async () => {
+        await this.reporter.runStep('Next point',async () => {
             await this.messagebox1.press('Enter');
         }
         );
-        await this.runStep('sub bulletpoint',async () => {
+        await this.reporter.runStep('sub bulletpoint',async () => {
             await this.messagebox1.press('Tab');
         }
         );
         }
-        await this.runStep('Send number list Message',async () => {
+        await this.reporter.runStep('Send number list Message',async () => {
             await this.sendmessage.click();
         }
         );
@@ -217,27 +213,27 @@ async runStep(testName, action) {
 
     async inboxlink(){
         // await this.messageformatting.click();
-        await this.runStep('Fill Message',async () => {
+        await this.reporter.runStep('Fill Message',async () => {
             await this.messagebox1.fill('Playwright link');
         }
         );
-        await this.runStep('Copied Message',async () => {
+        await this.reporter.runStep('Copied Message',async () => {
             await this.messagebox1.press('Control+a');
         }
         );
-        await this.runStep('Open Link',async () => {
+        await this.reporter.runStep('Open Link',async () => {
             await this.link.click();
         }
         );
-        await this.runStep('Filled URL',async () => {
+        await this.reporter.runStep('Filled URL',async () => {
             await this.linkurl.fill('https://fb.com');
         }
         );
-        await this.runStep('Insert Link',async () => {
+        await this.reporter.runStep('Insert Link',async () => {
             await this.insertlink.click();
         }
         );
-        await this.runStep('Send Link Message',async () => {
+        await this.reporter.runStep('Send Link Message',async () => {
             await this.messagebox1.press('Enter');
         }
         );
@@ -245,23 +241,23 @@ async runStep(testName, action) {
     }
 
     async voice(){
-        await this.runStep('Recording voice... Message',async () => {
+        await this.reporter.runStep('Recording voice... Message',async () => {
             await this.voicemessage.click();
         }
         );
-        await this.runStep('Delete Recording',async () => {
+        await this.reporter.runStep('Delete Recording',async () => {
             await this.voicedelete.click();
         }
         );
-        await this.runStep('Recording voice... Message',async () => {
+        await this.reporter.runStep('Recording voice... Message',async () => {
             await this.voicemessage.click();
         }
         );
-        await this.runStep('Confirm Voice Message',async () => {
+        await this.reporter.runStep('Confirm Voice Message',async () => {
             await this.voicesend.click();
         }
         );
-        await this.runStep('Send Voice Message',async () => {
+        await this.reporter.runStep('Send Voice Message',async () => {
             await this.messagebox1.press('Enter');
         }
         );
@@ -269,70 +265,70 @@ async runStep(testName, action) {
 
     async attachments(){
         const fileChooserPromise = this.page.waitForEvent('filechooser');
-        await this.runStep('Open setting',async () => {
+        await this.reporter.runStep('Open setting',async () => {
             await this.addattachment.click();
         }
         );
-        await this.runStep('Clicked on add attachments',async () => {
+        await this.reporter.runStep('Clicked on add attachments',async () => {
             await this.attach.click();
         }
         );
         const fileChooser = await fileChooserPromise;
-        await this.runStep('Select image',async () => {
+        await this.reporter.runStep('Select image',async () => {
             await fileChooser.setFiles('C:\\Users\\brahm\\Downloads\\chatboq setting color.png');
         }
         );
-        await this.runStep('Filled message',async () => {
+        await this.reporter.runStep('Filled message',async () => {
             await this.messagebox1.fill('Playwright message');
         }
         );
-        await this.runStep('Send Message',async () => {
+        await this.reporter.runStep('Send Message',async () => {
             await this.messagebox1.press('Enter');
         }
         );
     }
 
     async internalnotes(){
-        await this.runStep('Click on reply button',async () => {
+        await this.reporter.runStep('Click on reply button',async () => {
             await this.replybutton.click();
         }
         );
-        await this.runStep('Click on internal note button',async () => {
+        await this.reporter.runStep('Click on internal note button',async () => {
             await this.internalnote.click();
         }
         );
-        await this.runStep('Filled internal note message',async () => {
+        await this.reporter.runStep('Filled internal note message',async () => {
             await this.messagebox1.fill('internal notes message');
         }
         );
-        await this.runStep('Send internal note message',async () => {
+        await this.reporter.runStep('Send internal note message',async () => {
             await this.messagebox1.press('Enter');
         }
         );
-        await this.runStep('Click on reply message',async () => {
-            await this.replybutton.click();
-        }
-        );
-        await this.runStep('Clicked on internal notes button',async () => {
-            await this.internalbutton.click();
-        }
-        );
-        await this.runStep('Click on reply button to change the Internal notes box to reply box',async () => {
-            await this.reply.click();
-        }
-        );
+        // await this.reporter.runStep('Click on reply message',async () => {
+        //     await this.replybutton.click();
+        // }
+        // );
+        // await this.reporter.runStep('Clicked on internal notes button',async () => {
+        //     await this.internalbutton.click();
+        // }
+        // );
+        // await this.reporter.runStep('Click on reply button to change the Internal notes box to reply box',async () => {
+        //     await this.reply.click();
+        // }
+        // );
     }
 
     async quickresponse(){
-        await this.runStep('Enter / for shortcut',async () => {
+        await this.reporter.runStep('Enter / for shortcut',async () => {
             await this.messagebox1.fill('/');
         }
         );
-        await this.runStep('Clicked enter to select first shortcut',async () => {
+        await this.reporter.runStep('Clicked enter to select first shortcut',async () => {
             await this.messagebox1.press('Enter');
         }
         );
-        await this.runStep('send shortcut message',async () => {
+        await this.reporter.runStep('send shortcut message',async () => {
             await this.messagebox1.press('Enter');
         }
         );
@@ -348,30 +344,30 @@ async runStep(testName, action) {
     }
     
     async markedAsResolved(){
-        if(await this.resolveConvo.isVisible()){
+        if(await this.reporter.resolveConvo.isVisible()){
             await this.runStep('Clicked on resolve conversation button',async () => {
                 await this.resolveConvo.click();
         }
         );
-        await this.runStep('Filled Subject',async () => {
+        await this.reporter.runStep('Filled Subject',async () => {
             await this.subject.fill('tester is on work');
         }
         );
-        await this.runStep('Filled Remarks',async () => {
+        await this.reporter.runStep('Filled Remarks',async () => {
             await this.remarks.fill('resolving conversation through playwright');
         }
         );
-        await this.runStep('Click on Resolve Conversation button to unresolve conversation',async () => {
+        await this.reporter.runStep('Click on Resolve Conversation button to unresolve conversation',async () => {
             await this.resolved.click();
         }
         );
-        await this.runStep('Unresolve Conversation',async () => {
+        await this.reporter.runStep('Unresolve Conversation',async () => {
             await this.unresolveconvo.click();
         }
         );
     }
         else{
-            await this.runStep('Unresolve Conversation',async () => {
+            await this.reporter.runStep('Unresolve Conversation',async () => {
                 await this.unresolveconvo.click();
         }
         );
@@ -379,113 +375,113 @@ async runStep(testName, action) {
     }
 
     async snoozeconversation(){
-        await this.runStep('Open Three Dot menu',async () => {
+        await this.reporter.runStep('Open Three Dot menu',async () => {
             await this.threedotmenu.click();
         }
         );
-        await this.runStep('Open Snooze Button',async () => {
+        await this.reporter.runStep('Open Snooze Button',async () => {
             await this.snooze.click();
         }
         );
-        await this.runStep('Select Time for Snooze Conversation',async () => {
+        await this.reporter.runStep('Select Time for Snooze Conversation',async () => {
             await this.snnozedfor.click();
         }
         );
-        await this.runStep('Filled the reasoning for snoozing Conversation',async () => {
+        await this.reporter.runStep('Filled the reasoning for snoozing Conversation',async () => {
             await this.snoozereason.fill('snoozing for testing purpose');
         }
         );
-        await this.runStep('Confirmating Snooze Conversation',async () => {
+        await this.reporter.runStep('Confirmating Snooze Conversation',async () => {
             await this.snoozeconfirm.click();
         }
         );
-        await this.runStep('click on Status Filter',async () => {
+        await this.reporter.runStep('click on Status Filter',async () => {
             await this.filter.click();
         }
         );
-        await this.runStep('Applied Snoozed Filter',async () => {
+        await this.reporter.runStep('Applied Snoozed Filter',async () => {
             await this.snoozefilter.click();
         }
         );
-        await this.runStep('Open Conversation',async () => {
+        await this.reporter.runStep('Open Conversation',async () => {
             await this.convo.click();
         }
         );
-        await this.runStep('Filled message to unsnoozed conversation',async () => {
+        await this.reporter.runStep('Filled message to unsnoozed conversation',async () => {
             await this.messagebox1.fill('unsnoozing conversation');
         }
         );
-        await this.runStep('Send message to Unsnoozed conversation ',async () => {
+        await this.reporter.runStep('Send message to Unsnoozed conversation ',async () => {
             await this.messagebox1.press('Enter');
         }
         );
-        await this.runStep('Undo Snooze filter ',async () => {
+        await this.reporter.runStep('Undo Snooze filter ',async () => {
             await this.undoSnooze.Click();
         }
         );
-        await this.runStep('Default Status Filter ',async () => {
+        await this.reporter.runStep('Default Status Filter ',async () => {
             await this.allFilter.click('');
         }
         );
 
     }
     async banvisitor(){
-        await this.runStep('Open Three dot menu',async () => {
+        await this.reporter.runStep('Open Three dot menu',async () => {
             await this.threedotmenu.click();
         }
         );
-        await this.runStep('Open Ip ban Button',async () => {
+        await this.reporter.runStep('Open Ip ban Button',async () => {
             await this.ipban.click();
         }
         );
-        await this.runStep('Filled Ip Ban Reasoning',async () => {
+        await this.reporter.runStep('Filled Ip Ban Reasoning',async () => {
             await this.ipreason.fill('banning visitor from further contact');
         }
         );
-        await this.runStep('Click on Ip Ban Confirm Button',async () => {
+        await this.reporter.runStep('Click on Ip Ban Confirm Button',async () => {
             await this.banconfirm.click();
         }
         );
-        await this.runStep('Open Three Dot Menu',async () => {
+        await this.reporter.runStep('Open Three Dot Menu',async () => {
             await this.threedotmenu.click();
         }
         );
-        await this.runStep('Unban visitor',async () => {
+        await this.reporter.runStep('Unban visitor',async () => {
             await this.unban.click();
         }
         );
-        await this.runStep('Cliked on Visitor Unban confirm Button',async () => {
+        await this.reporter.runStep('Cliked on Visitor Unban confirm Button',async () => {
             await this.unbanconfirm.click();
         }
         );
     }
 
     async subInbox(){
-        await this.runStep('Open three Dot Menu',async () => {
+        await this.reporter.runStep('Open three Dot Menu',async () => {
             await this.threedotmenu.click();
         }
         );
-        await this.runStep('Move to Sub inbox button clicked',async () => {
+        await this.reporter.runStep('Move to Sub inbox button clicked',async () => {
             await this.moveToSubInbox.click();
         }
         );
-        await this.runStep('Moved to Support Inbox',async () => {
+        await this.reporter.runStep('Moved to Support Inbox',async () => {
             await this.support.click();
         }
         );
-        await this.runStep('Visitor Conversation Open',async () => {
+        await this.reporter.runStep('Visitor Conversation Open',async () => {
             await this.visitor1.click();
         }
         );
-        await this.runStep('Open Three Dot Menu',async () => {
+        await this.reporter.runStep('Open Three Dot Menu',async () => {
             await this.threedotmenu.click();
         }
         );
-        await this.runStep('Moved to inbox Button',async () => {
+        await this.reporter.runStep('Moved to inbox Button',async () => {
             await this.moveToSubInbox.click();
         }
         );
-        await this.runStep('Conversation is moved back to general Inbox',async () => {
+        await this.reporter.runStep('Conversation is moved back to general Inbox',async () => {
             await this.backToGeneral.click();
         }
         );
@@ -493,95 +489,95 @@ async runStep(testName, action) {
 
 
     async StatusFilter(){
-        await this.runStep('click on Status Filter',async () => {
+        await this.reporter.runStep('click on Status Filter',async () => {
             await this.filter.click();
         }
         );
-        await this.runStep('Click on Unread Filter',async () => {
+        await this.reporter.runStep('Click on Unread Filter',async () => {
             await this.unreadfilter.click();
         }
         );
-        await this.runStep('undo Unread Filter',async () => {
+        await this.reporter.runStep('undo Unread Filter',async () => {
             await this.undoUnread.click();
         }
         );
-        await this.runStep('Click on Unresolved Filter',async () => {
+        await this.reporter.runStep('Click on Unresolved Filter',async () => {
             await this.unresolvefilter.click();
         }
         );
-        await this.runStep('undo unresolved Filter',async () => {
+        await this.reporter.runStep('undo unresolved Filter',async () => {
             await this.undoUnresolved.click();
         }
         );
-        await this.runStep('Click on Resolve Filter',async () => {
+        await this.reporter.runStep('Click on Resolve Filter',async () => {
             await this.resolvefilter.click();
         }
         );
-        await this.runStep('undo Resolved Filter',async () => {
+        await this.reporter.runStep('undo Resolved Filter',async () => {
             await this.undoresolved.click();
         }
         );
-        await this.runStep('Click on Reopen Filter',async () => {
+        await this.reporter.runStep('Click on Reopen Filter',async () => {
             await this.reopenfilter.click();
         }
         );
-        await this.runStep('Undo reopen Filter',async () => {
+        await this.reporter.runStep('Undo reopen Filter',async () => {
             await this.undoReopen.click();
         }
         );
-        await this.runStep('Click on VIP Filter',async () => {
+        await this.reporter.runStep('Click on VIP Filter',async () => {
             await this.vipfilter.click();
         }
         );
-        await this.runStep('Undo VIP Filter',async () => {
+        await this.reporter.runStep('Undo VIP Filter',async () => {
             await this.undoVip.click();
         }
         );
-        await this.runStep('Default Status Filter ',async () => {
+        await this.reporter.runStep('Default Status Filter ',async () => {
             await this.allFilter.click('');
         }
         );
     }
     async Filters(){
-        await this.runStep('All Filter ',async () => {
+        await this.reporter.runStep('All Filter ',async () => {
             await this.MainAllFilter.click('');
         }
         );
-        await this.runStep('Assigned to me Filter ',async () => {
+        await this.reporter.runStep('Assigned to me Filter ',async () => {
             await this.assignToMefilter.click('');
         }
         );
-        await this.runStep('Undo assign to me Filter ',async () => {
+        await this.reporter.runStep('Undo assign to me Filter ',async () => {
             await this.undoassignToMeFilter.click('');
         }
         );
-        await this.runStep('UnassignedFilter ',async () => {
+        await this.reporter.runStep('UnassignedFilter ',async () => {
             await this.Unassignedfilter.click('');
         }
         );
-        await this.runStep('Undo Unassigned Filter ',async () => {
+        await this.reporter.runStep('Undo Unassigned Filter ',async () => {
             await this.undoUnassignedFilter.click('');
         }
         );
-        await this.runStep('Mention Filter ',async () => {
+        await this.reporter.runStep('Mention Filter ',async () => {
             await this.Mentionfilter.click('');
         }
         );
-        await this.runStep('undo mentionFilter ',async () => {
+        await this.reporter.runStep('undo mentionFilter ',async () => {
             await this.undoMentionFilter.click('');
         }
         );
-        await this.runStep('UndoAll Filter ',async () => {
+        await this.reporter.runStep('UndoAll Filter ',async () => {
             await this.UndoAllFilter.click('');
         }
         );
     }
     async channel(){
-        await this.runStep('clicked on channel ',async () => {
+        await this.reporter.runStep('clicked on channel ',async () => {
             await this.channelFilter.click();
         }
         );
-        await this.runStep('applied whatsapp filter ',async () => {
+        await this.reporter.runStep('applied whatsapp filter ',async () => {
             await this.whatsappFilter.click();
             await this.whatsappFilter.press('Enter');
         }
@@ -589,19 +585,19 @@ async runStep(testName, action) {
     }
 
     async searchConversation(){
-        await this.runStep('search button',async () => {
+        await this.reporter.runStep('search button',async () => {
             await this.searchbutton.click();
         }
         );
-        await this.runStep('search convo ',async () => {
+        await this.reporter.runStep('search convo ',async () => {
             await this.search.click();
         }
         );
-        await this.runStep('search convo ',async () => {
+        await this.reporter.runStep('search convo ',async () => {
             await this.search.fill('pro');
         }
         );
-        await this.runStep('backspace',async () => {
+        await this.reporter.runStep('backspace',async () => {
             await this.search.press('Backspace');
             await this.search.press('Backspace');
             await this.search.press('Backspace');
@@ -610,78 +606,29 @@ async runStep(testName, action) {
     }
 
     async activeInactive(){
-        await this.runStep('active/inactive filter button',async () => {
+        await this.reporter.runStep('active/inactive filter button',async () => {
             await this.activeStatusFilter.click();
         }
         );
-        await this.runStep('offline filter',async () => {
+        await this.reporter.runStep('offline filter',async () => {
             await this.offlineFilter.click();
         }
         );
-        await this.runStep('active/inactive filter button',async () => {
+        await this.reporter.runStep('active/inactive filter button',async () => {
             await this.activeStatusFilter.click();
         }
         );
-        await this.runStep('Online Filter',async () => {
+        await this.reporter.runStep('Online Filter',async () => {
             await this.onlineFilter.click();
         }
         );
-        await this.runStep('active/inactive filter button',async () => {
+        await this.reporter.runStep('active/inactive filter button',async () => {
             await this.activeStatusFilter.click();
         }
         );
-        await this.runStep('close status filter',async () => {
+        await this.reporter.runStep('close status filter',async () => {
             await this.all.click();
         }
         );
-    }
-
-
-printTestSummary() {
-        console.log('\n');
-        console.log(
-            '=========================================='
-        );
-
-        console.log(
-            '          TEST EXECUTION SUMMARY'
-
-      );
-
-        console.log(
-            `Total Tests  : ${this.totalTests}`
-        );
-
-        console.log(
-            `Passed Tests : ${this.passedTests}`
-        );
-
-        console.log(
-            `Failed Tests : ${this.failedTests}`
-        );
-
-        if (this.failedTests > 0) {
-
-            console.log('');
-            console.log('FAILED TESTS:');
-
-            this.failedTestNames.forEach(
-                (testName, index) => {
-
-                    console.log(
-                        `${index + 1}. ${testName}`
-                    );
-
-                }
-            );
-
-        } else {
-
-            console.log(
-                'ALL TESTS PASSED'
-            );
-        }
-
-        console.log('');
     }
 }

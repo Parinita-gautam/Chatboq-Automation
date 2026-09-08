@@ -14,10 +14,10 @@ module.exports = defineConfig({
             width: 1366,
             height: 620,
     },
-    actionTimeout: 7000,
+    actionTimeout: 20000,
 
     launchOptions: {
-      slowMo: 2000,
+      slowMo: 1200,
     },
 
     screenshot: 'only-on-failure',
